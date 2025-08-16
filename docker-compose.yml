@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+  kafka:
+    image: bitnami/kafka:3.5.1
+    container_name: kafka
+    ports:
+      - "9092:9092"     # доступ внутри сети (не обязателен наружу)
+      - "29092:29092"   # доступ с хоста
+    environment:
+      KAFKA_ENABLE_KRAFT: "yes"
+      KAFKA_CFG_NODE_ID: "1"
+      KAFKA_CFG_PROCESS_ROLES: "broker,controller"
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+
+      # слушаем и внутри сети, и наружу
+      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092,PLAINTEXT_HOST://:29092,CONTROLLER://:9093
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_CFG_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
+
+      # автосоздание топиков
+      KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: "true"
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: click
+    ports:
+      - "8123:8123"   # HTTP
+      - "9000:9000"   # TCP
+    environment:
+      CLICKHOUSE_DB: my_database
+      CLICKHOUSE_USER: username
+      CLICKHOUSE_PASSWORD: 123
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+    depends_on:
+      - kafka
+
+volumes:
+  clickhouse_data:

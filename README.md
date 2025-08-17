@@ -10,18 +10,26 @@
 Для запуска примера необходимо:
 
 ## Запустить ClickHouse и Kafka
-`docker-compose up -d`
+```bash
+docker-compose up -d
+```
 
 ## Инициализировать БД в ClickHouse
 Необходимо выполнить запросы из файла init_clickhouse_db.sql
 
 Можно подключиться к ClickHouse с помощью DBEaver или GUI самого ClickHouse по ссылке
-`http://localhost:8123/play?user=username&password=123`
+```bash
+http://localhost:8123/play?user=username&password=123
+```
 
 ## Запустить скрипт-триггер
 Всю логику работы триггера можно реализовать на базе скрипта read_data_from_kafka.py
 
 Запускить скрипт можно с помощью команды
-`python3 kafka.py`
+```bash
+python3 kafka.py
+```
 Для работы скрипта необходим пакет confluent_kafka, который можно установить с помощью команды
-`pip install confluent-kafka`
+```bash
+pip install confluent-kafka
+```
